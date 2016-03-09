@@ -1,6 +1,9 @@
 import urllib2
 import urllib
 from bs4 import BeautifulSoup
+import datetime
+import pickle
+import time
 
 class Safe():
     html = []
@@ -33,24 +36,48 @@ class Safe():
 
     def google_api(self, test):
         # Get API Information.
-        test = urllib.quote(test)
-        params = urllib.urlencode(self.param_dic) 
-        self.api_object = urllib.urlopen(self.api_url + params + '&url=' + test)
-        self.rcode = self.api_object.getcode() 
+
+        try:
+            test = urllib.quote(test)
+            params = urllib.urlencode(self.param_dic) 
+            self.api_object = urllib.urlopen(self.api_url + params + '&url=' + test)
+            self.rcode = self.api_object.getcode() 
+        except:
+            pass
+
+    def save(self):
+        # Save site Information.
+        d = datetime.date.today()
+        name = d.isoformat()
+
+        f = open(name, 'wb')
+        pickle.dump(self.dic, f)
+        f.close()
 
 def run():
     a = Safe()
 
-    for i in range(1, 1000, 10):
-        a.request(i)
-        a.parse()
+#    for i in range(1, 1000, 10):
+#        a.request(i)
+#        a.parse()
+#
+#    a.save()
 
-    for i in a.dic:
+    f = open('2016-03-08')
+    a.dic = pickle.load(f)
+
+    b = time.time()
+
+    for c, i in enumerate(a.dic):
         a.google_api(a.dic[i])
         if a.rcode == 204:
-            print i, '\t\t\t', 'SAFE'
+            print c, i, '\t\t\t', 'SAFE'
         else:
-            print i, '\t\t\t', a.api_object.read()
+            print c, i, '\t\t\t', a.api_object.read()
+
+    c = time.time()
+    d = c - b
+    print '[*] time : %d sec.' % d
 
 if __name__ == '__main__':
     run()
