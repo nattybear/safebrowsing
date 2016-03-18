@@ -9,6 +9,7 @@ import sys
 import csv
 from datetime import datetime, timedelta
 import os
+import re
 
 class Safe():
     html = []
@@ -74,6 +75,15 @@ class Safe():
         now = now.split(' ')[0]
         self.date = now
 
+    def crlf(self, filename):
+        # Change from LF to CRLF for Windows.
+        p = re.compile('\n')
+        f = open(filename)
+        m = p.sub('\r\n', f.read())
+        f.close()
+        f = open(filename, 'w')
+        f.write(m)
+        
 def run():
     a = Safe()
 
@@ -132,15 +142,22 @@ def run():
 
     try:
         os.mkdir('log')
-        os.chdir('log')
     except:
         pass
+
+    os.chdir('log')
 
     f = open(filename, 'w')
 
     for i in a.result:
-        print >> f, i[0], i[1], i[2], i[3], '\r'
+        print >> f, i[0], i[1], i[2], i[3]
+
+    print >> f, a.now
+
     f.close()
+
+    # Change from LF to CRLF for Windows.
+    a.crlf(filename)
 
 if __name__ == '__main__':
     run()
