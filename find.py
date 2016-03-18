@@ -7,6 +7,7 @@ import time
 from prettytable import PrettyTable
 import sys
 import csv
+from datetime import datetime, timedelta
 
 class Safe():
     html = []
@@ -18,6 +19,8 @@ class Safe():
     state = []
     rcode = []
     result = []
+    date = []
+    now = []
     
     def request(self, start):
         # Request site information.
@@ -60,6 +63,16 @@ class Safe():
         pickle.dump(self.dic, f)
         f.close()
 
+    def now(self):
+        # Return UTC + 9 (Seoul Time)
+        utc = datetime.utcnow()
+        delta = timedelta(hours=9)
+        now = utc + delta
+        now = str(now)
+        self.now = now
+        now = now.split(' ')[0]
+        self.date = now
+
 def run():
     a = Safe()
 
@@ -86,14 +99,18 @@ def run():
         a.google_api(a.dic[i])
         a.state = a.api_object.read()
         if a.rcode == 204:
-            print c, i, 'SAFE'
+            print c+1, i, 'SAFE'
         else:
-            print c, i, a.state
+            print c+1, i, a.state
             # Populate Result List.
             a.result.append([i, a.dic[i], a.state])
 
     # Print abnormal site.
-    x = PrettyTable(["Name", "URL", "State"])
+    x = PrettyTable(["No.", "Name", "URL", "State"])
+
+    # Add No. result list.
+    for i, j in enumerate(a.result):
+        j.insert(0, i+1)
     
     for i in a.result:
         x.add_row(i)
@@ -104,6 +121,10 @@ def run():
     c = time.time()
     d = c - b
     print '[*] time : %d sec.' % d
+
+    # Print now.
+    a.now()
+    print '[*] now : ' + a.now
 
 if __name__ == '__main__':
     run()
