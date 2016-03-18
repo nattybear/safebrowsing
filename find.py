@@ -8,6 +8,7 @@ from prettytable import PrettyTable
 import sys
 import csv
 from datetime import datetime, timedelta
+import os
 
 class Safe():
     html = []
@@ -125,6 +126,21 @@ def run():
     # Print now.
     a.now()
     print '[*] now : ' + a.now
+
+    # Write log. Make directory named 'log' under the current directory and write log.
+    filename = a.date + '.txt'
+
+    try:
+        os.mkdir('log')
+        os.chdir('log')
+    except:
+        pass
+
+    f = open(filename, 'w')
+
+    for i in a.result:
+        print >> f, i[0], i[1], i[2], i[3], '\r'
+    f.close()
 
 if __name__ == '__main__':
     run()
