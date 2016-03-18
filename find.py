@@ -5,6 +5,8 @@ import datetime
 import pickle
 import time
 from prettytable import PrettyTable
+import sys
+import csv
 
 class Safe():
     html = []
@@ -68,8 +70,14 @@ def run():
 #    a.save()
 
     # Open site information as pickle object.
-    f = open('nhch.dic')
-    a.dic = pickle.load(f)
+#    f = open('nhch.dic')
+#    a.dic = pickle.load(f)
+
+    # Open 'test.csv'
+    f = open('test.csv')
+    r = csv.reader(f)
+    for i in r:
+        a.dic[i[0]] = i[1]
 
     b = time.time()
 
